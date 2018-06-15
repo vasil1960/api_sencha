@@ -1,84 +1,85 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Kgm;
+
 use App\Kgm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\Controller;
 
 class ApiKgmController extends Controller
 {
-
-//    https://vasil.iag.bg/kgm/search?seria=А&number=33
+    //    https://vasil.iag.bg/kgm/search?seria=А&number=33
     public function search(Request $request)
     {
         $names = Kgm::join('u_names','u_names.ID','=','u_kgm.NamesID')
-                   ->join('u_address','u_address.NamesID','=','u_names.ID')
-                   ->join('regions.PopulatedPlaces','regions.PopulatedPlaces.ID','=','u_address.Grad')
-                   ->where([
-                       ['SeriaKGM', $request->seria],
-                       ['strNumberKGM','LIKE', '%'. $request->number . '%']
-                   ])
-                   ->take(100)
-                   ->get();
+            ->join('u_address','u_address.NamesID','=','u_names.ID')
+            ->join('regions.PopulatedPlaces','regions.PopulatedPlaces.ID','=','u_address.Grad')
+            ->where([
+                ['SeriaKGM', $request->seria],
+                ['strNumberKGM','LIKE', '%'. $request->number . '%']
+            ])
+            ->take(100)
+            ->get();
 
         if( $names->count() == 0 )
         {
             return Response::json([
-                    'status_message'=>'Няма такова име',
-                    'status_code'   => 404
+                'status_message'=>'Няма такова име',
+                'status_code'   => 404
             ], 200);
         }
 
         return response()
-                        ->json([
-                            'records'        => $this->transformCollection_names($names),
-                            'records_count'  => $names->count(),
-                            'status_message' => 'Извличането на данни завърши успешно',
-                            'status_code'    => 200
-                            ])
-                        ->setCallback($request->input('callback'));
+            ->json([
+                'records'        => $this->transformCollection_names($names),
+                'records_count'  => $names->count(),
+                'status_message' => 'Извличането на данни завърши успешно',
+                'status_code'    => 200
+            ])
+            ->setCallback($request->input('callback'));
     }
 
     // https://vasil.iag.bg/kgm/get?names_id=12346
     public function get(Request $request)
     {
         $names = Kgm::join('u_names','u_names.ID','=','u_kgm.NamesID')
-                    ->join('u_address','u_address.NamesID','=','u_names.ID')
-                    ->join('regions.PopulatedPlaces','regions.PopulatedPlaces.ID','=','u_address.Grad')
-                    ->where('u_names.ID', $request->names_id)
-                    ->first();
+            ->join('u_address','u_address.NamesID','=','u_names.ID')
+            ->join('regions.PopulatedPlaces','regions.PopulatedPlaces.ID','=','u_address.Grad')
+            ->where('u_names.ID', $request->names_id)
+            ->first();
 
         $kgms = Kgm::join('u_names','u_names.ID','=','u_kgm.NamesID')
-                   ->join('u_address','u_address.NamesID','=','u_names.ID')
-                   ->join('regions.PopulatedPlaces','regions.PopulatedPlaces.ID','=','u_address.Grad')
-                   ->where('u_names.ID', $request->names_id)
-                   ->get();
+            ->join('u_address','u_address.NamesID','=','u_names.ID')
+            ->join('regions.PopulatedPlaces','regions.PopulatedPlaces.ID','=','u_address.Grad')
+            ->where('u_names.ID', $request->names_id)
+            ->get();
 
         if( ! $kgms || ! $names)
         {
             return response()
-                            ->json([
-                                    'status_message'=>'Няма такова лице',
-                                    'status_code'   => 404
-                                ], 200)
-                            ->setCallback($request->input('callback'));;
+                ->json([
+                    'status_message'=>'Няма такова лице',
+                    'status_code'   => 404
+                ], 200)
+                ->setCallback($request->input('callback'));
         }
 
         return Response::json([
-                'ime'            => $names['Ime'],
-                'prezime'        => $names['Prezime'],
-                'familia'        => $names['Familia'],
-                'grad'           => $names['PolpulatedPlace'],
-                'obshtina'       => $names['Municipality'],
-                'oblast'         => $names['Region'],
-                'email'          => $names['Email'],
-                'phone'          => $names['Phone'],
+            'ime'            => $names['Ime'],
+            'prezime'        => $names['Prezime'],
+            'familia'        => $names['Familia'],
+            'grad'           => $names['PolpulatedPlace'],
+            'obshtina'       => $names['Municipality'],
+            'oblast'         => $names['Region'],
+            'email'          => $names['Email'],
+            'phone'          => $names['Phone'],
 //                'egn'            => $names['EGN_EIK'],
-                'address'        => $names['AddressP'],
-                'records'        => $this->transformCollection($kgms),
-                'status_message' => 'Извличането на данни завърши успешно',
-                'records_count'  => $kgms->count(),
-                'status_code'    => 200,
+            'address'        => $names['AddressP'],
+            'records'        => $this->transformCollection($kgms),
+            'status_message' => 'Извличането на данни завърши успешно',
+            'records_count'  => $kgms->count(),
+            'status_code'    => 200,
         ], 200);
     }
 

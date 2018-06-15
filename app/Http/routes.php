@@ -15,15 +15,17 @@
 // API Контролни горски марки
 Route::group(['prefix'=>'kgm'], function() {
 
-    Route::get('search','ApiKgmController@search');
+    Route::get('search','Kgm\ApiKgmController@search');
 
-    Route::get('get','ApiKgmController@get');
+    Route::get('get','Kgm\ApiKgmController@get');
 
 //    Route::get('all','KgmapiController@all');
 
 });
 
-// API
-//Route::group(['prefix'=>'api'], function() {
-//
-//});
+// API Телефонен указател
+Route::group(['prefix'=>'tel'], function() {
+
+    Route::get('allusers',"Tel\AllUsersController@allusers");
+
+});
