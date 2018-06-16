@@ -18,9 +18,9 @@ class AllUsersController extends Controller
     public function allusers(Request $request){
         $names = User::select('nugEmpl.empl.*', 'nugEmpl.dlagnosti.Dlagnost')
             ->join('nugEmpl.dlagnosti','nugEmpl.dlagnosti.ID','=','nugEmpl.empl.DlagID')
-            ->where(['nugEmpl.empl.Statut' => 1,
-//                     'nugEmpl.empl.Pod_Id' => 1
-            ])
+            ->where('nugEmpl.empl.Statut', 1)
+            ->where('nugEmpl.empl.Name', 'LIKE', '%' . $request->Ime . '%')
+            ->where('nugEmpl.empl.Familia', 'LIKE', '%' . $request->Fam . '%')
             ->orderBy('nugEmpl.empl.DlagID')
             ->limit($request->limit)
             ->offset($request->start)
