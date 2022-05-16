@@ -43,6 +43,10 @@ Route::group(['prefix'=>'tel'], function() {
 
 Route::get('list', ['uses' => 'ListNamesKgmController@index', 'us' => 'list']);
 
+Route::get('pod', ['uses' => 'PodeleniaController@index', 'us' => 'pod']);
+
+
+
 Route::group(['prefix'=>'tel/v1'], function() {
     Route::resource('/','IagTel\EmplController');
 });

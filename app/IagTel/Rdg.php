@@ -12,6 +12,6 @@ class Rdg extends Model
 
     public function dgs()
     {
-        return $this->hasMany('App\IagTel\Dgs','Glav_Pod','Pod_Id');
+        return $this->hasMany(Dgs::class,'Glav_Pod','Pod_Id');
     }
 }
